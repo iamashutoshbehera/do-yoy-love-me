@@ -7,27 +7,52 @@ function moveButton() {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
 
-    // Yes button size
-    const buttonWidth = yesBtn.offsetWidth;
-    const buttonHeight = yesBtn.offsetHeight;
+    // Button sizes
+    const yesWidth = yesBtn.offsetWidth;
+    const yesHeight = yesBtn.offsetHeight;
 
-    // Safe space from browser edges
+    // No button position
+    const noRect = noBtn.getBoundingClientRect();
+
+    // Safe spacing from edges
     const padding = 20;
 
-    // Maximum allowed positions
-    const maxX = viewportWidth - buttonWidth - padding;
-    const maxY = viewportHeight - buttonHeight - padding;
+    // Minimum distance from No button
+    const safeDistance = 120;
 
-    // Minimum allowed positions
+    // Allowed movement area
+    const maxX = viewportWidth - yesWidth - padding;
+    const maxY = viewportHeight - yesHeight - padding;
+
     const minX = padding;
     const minY = padding;
 
-    // Random positions within browser view
-    const randomX =
-        Math.floor(Math.random() * (maxX - minX)) + minX;
+    let randomX;
+    let randomY;
 
-    const randomY =
-        Math.floor(Math.random() * (maxY - minY)) + minY;
+    let isOverlapping = true;
+
+    // Keep generating position until it is safe
+    while (isOverlapping) {
+
+        randomX =
+            Math.floor(Math.random() * (maxX - minX)) + minX;
+
+        randomY =
+            Math.floor(Math.random() * (maxY - minY)) + minY;
+
+        // Distance from No button
+        const distanceX = Math.abs(randomX - noRect.left);
+        const distanceY = Math.abs(randomY - noRect.top);
+
+        // Check overlap safety
+        if (
+            distanceX > safeDistance ||
+            distanceY > safeDistance
+        ) {
+            isOverlapping = false;
+        }
+    }
 
     // Move Yes button
     yesBtn.style.position = "fixed";
@@ -39,7 +64,7 @@ function moveButton() {
 
 yesBtn.addEventListener("mouseenter", moveButton);
 
-/* Mobile Tap */
+/* Mobile Touch */
 
 yesBtn.addEventListener("touchstart", (e) => {
     e.preventDefault();
@@ -50,12 +75,12 @@ yesBtn.addEventListener("touchstart", (e) => {
 
 noBtn.addEventListener("click", () => {
 
-    // Create popup message
+    // Create popup
     const popup = document.createElement("div");
 
     popup.innerHTML = "😭 You broke my heart!";
 
-    // Popup styling
+    // Styling
     popup.style.position = "fixed";
     popup.style.top = "30px";
     popup.style.left = "50%";
@@ -69,10 +94,9 @@ noBtn.addEventListener("click", () => {
     popup.style.zIndex = "9999";
     popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
 
-    // Add popup to page
     document.body.appendChild(popup);
 
-    // Remove popup after 2.5 seconds
+    // Remove popup
     setTimeout(() => {
         popup.remove();
     }, 2500);
